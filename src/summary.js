@@ -10,8 +10,8 @@ export async function generateSummary(meta, details) {
   // const holdings = await getHoldings(account);
 
   const totals = { cad: 0, usd: 0 };
-  totals['cad'] = cash['cad'] + round(cash['usd'] * exchange, 2);
-  totals['usd'] = round(cash['cad'] / exchange, 2) + cash['usd'];
+  totals['cad'] = round(cash['cad'] + cash['usd'] * exchange);
+  totals['usd'] = round(cash['cad'] / exchange + cash['usd']);
 
   return { contributions, cash, totals };
 }

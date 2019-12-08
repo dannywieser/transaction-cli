@@ -3,15 +3,19 @@ import { TransactionTypes } from './types';
 import { transactionsCollection } from './collections';
 import { generateSummary } from './summary';
 import { generateMeta } from './meta';
+import { round } from './utils';
 
-export async function calculateContributions({ date, account, exchange }, newTransaction) {
+export async function calculateContributions({ date, account, exchange, type }, newTransaction) {
   const { client, collection } = await connect(transactionsCollection(account));
   const query = { 'meta.date': { $lt: date }, 'meta.type': TransactionTypes.contribute.value };
   const coll = await collection.find(query);
-  let contributions = {
-    cad: newTransaction['cad'],
-    usd: newTransaction['usd'],
-  };
+  const contributions =
+    type === TransactionTypes.contribute
+      ? {
+          cad: newTransaction['cad'],
+          usd: newTransaction['usd'],
+        }
+      : { cad: 0, usd: 0 };
 
   while (await coll.hasNext()) {
     const transaction = await coll.next();
@@ -20,9 +24,10 @@ export async function calculateContributions({ date, account, exchange }, newTra
     contributions['cad'] += cad;
     contributions['usd'] += usd;
   }
+  const totalInCAD = round(contributions['cad'] + contributions['usd'] * exchange);
   client.close();
 
-  return contributions;
+  return { ...contributions, totalInCAD };
 }
 
 export async function contribute(answers) {

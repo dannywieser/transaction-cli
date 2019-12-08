@@ -1,7 +1,10 @@
+import fetch from 'node-fetch';
+
 import { connect } from './mongo';
 import { TransactionTypes } from './types';
 import { transactionsCollection } from './collections';
-import fetch from 'node-fetch';
+import { round } from './utils';
+
 // what makes summary have cash?
 //   1. contribution USD/CAD
 //   2. SELL transaction => + cash
@@ -36,8 +39,8 @@ export async function calculateCash({ date, account }, newTransaction) {
     } = transaction;
     const { cad = 0, usd = 0 } = details;
     if (type === TransactionTypes.contribute.value) {
-      cash['cad'] += cad;
-      cash['usd'] += usd;
+      cash['cad'] = round(cash['cad'] + cad);
+      cash['usd'] = round(cash['usd'] + usd);
     }
   }
   client.close();

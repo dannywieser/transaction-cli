@@ -25,10 +25,17 @@ const questions = [
     filter: toLower,
   },
   {
+    type: 'input',
+    name: 'date',
+    message: 'Transaction date',
+    default: new Date(),
+    filter: (value) => new Date(value),
+  },
+  {
     type: 'expand',
     name: 'type',
     message: 'What type of transaction?',
-    choices: [TransactionTypes.contribute],
+    choices: [TransactionTypes.contribute, TransactionTypes.conversion],
     filter: toLower,
   },
   {
@@ -44,6 +51,34 @@ const questions = [
     default: 'cad',
     choices: currency,
     when: ({ type }) => type === 'contribute',
+  },
+  {
+    type: 'expand',
+    name: 'from',
+    message: 'from',
+    default: 'cad',
+    choices: currency,
+    when: ({ type }) => type === 'conversion',
+  },
+  {
+    type: 'expand',
+    name: 'to',
+    message: 'to',
+    default: 'usd',
+    choices: currency,
+    when: ({ type }) => type === 'conversion',
+  },
+  {
+    type: 'number',
+    name: 'debit',
+    message: 'Source debit',
+    when: ({ type }) => type === 'conversion',
+  },
+  {
+    type: 'number',
+    name: 'credit',
+    message: 'Target Credit',
+    when: ({ type }) => type === 'conversion',
   },
 ];
 

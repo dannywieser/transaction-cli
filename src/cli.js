@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import questions from './questions';
 import { contribute } from './contribute';
+import { conversion } from './conversion';
 import { transactionsCollection } from './collections';
 import { connect } from './mongo';
 import chalk from 'chalk';
@@ -9,6 +10,7 @@ console.log(chalk.white.bgBlue.bold('=== Transaction::CLI ==='));
 
 const handlers = {
   contribute,
+  conversion,
 };
 
 const confirmAndWrite = (transaction, account) => {
@@ -27,6 +29,6 @@ const confirmAndWrite = (transaction, account) => {
 
 inquirer.prompt(questions).then(async (answers) => {
   const { type, account } = answers;
-  const transaction = await handlers[type]({ ...answers, date: new Date() });
+  const transaction = await handlers[type](answers);
   confirmAndWrite(transaction, account);
 });
