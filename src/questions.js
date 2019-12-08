@@ -3,6 +3,19 @@ import { TransactionTypes } from './types';
 
 const toLower = (val) => (val ? val.toLowerCase() : val);
 
+const currency = [
+  {
+    key: 'u',
+    name: 'USD',
+    value: 'usd',
+  },
+  {
+    key: 'c',
+    name: 'CAD',
+    value: 'cad',
+  },
+];
+
 const questions = [
   {
     type: 'expand',
@@ -28,18 +41,8 @@ const questions = [
     type: 'expand',
     name: 'currency',
     message: 'Currency?',
-    choices: [
-      {
-        key: 'u',
-        name: 'USD',
-        value: 'usd',
-      },
-      {
-        key: 'c',
-        name: 'CAD',
-        value: 'cad',
-      },
-    ],
+    default: 'cad',
+    choices: currency,
     when: ({ type }) => type === 'contribute',
   },
 ];
