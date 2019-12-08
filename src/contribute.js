@@ -1,29 +1,34 @@
-import doAction from './mongo';
+import { connect } from './mongo';
+import { TransactionTypes } from './types';
 
-const allPreviousContributions = (date) => {
+export async function calculateTotalContributions(collection, date) {
+  const query = { 'meta.date': { $lt: date }, 'meta.type': TransactionTypes.contribute.value };
+  const coll = await collection.find(query);
   let total = 0;
-  doAction('transactions', (collection) => {
-    collection.find({ date: { $lt: date } }).each((err, result) => {
-      console.log(result);
-      const { amount } = result;
-      total += amount;
-    });
-  });
+  while (await coll.hasNext()) {
+    const transaction = await coll.next();
+    const { details = {} } = transaction || {};
+    const { deposit = 0 } = details;
+    total += deposit;
+  }
   return total;
-};
-
-export function contribute({ type, contribution, currency }) {
-  const date = new Date();
-  const transaction = {
-    type,
-    currency,
-    date,
-    amount: contribution,
-  };
-  allPreviousContributions(date);
-  doAction('transactions', (collection, callback) => collection.insertOne(transaction, callback));
 }
 
-export function getContributionTotal() {
-  //
+export async function contribute({ account, type, deposit, currency }) {
+  const date = new Date();
+  const { client, collection } = await connect(`transactions.${account}`);
+  const prevContributions = await calculateTotalContributions(collection, date);
+  const totalContributions = prevContributions + deposit;
+
+  const transaction = {
+    meta: {
+      date,
+      type,
+      currency,
+    },
+    details: { deposit },
+    summary: { totalContributions },
+  };
+  console.log(transaction);
+  collection.insertOne(transaction, () => client.close());
 }

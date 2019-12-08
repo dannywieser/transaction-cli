@@ -12,4 +12,4 @@ node_modules/
 .eslintcache
 *.tgz
 .yarn-integrity
-db-config.js
+config.js

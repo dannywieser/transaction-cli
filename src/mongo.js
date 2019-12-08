@@ -4,20 +4,9 @@ import dbConfig from '../config';
 const { url } = dbConfig;
 const dbName = dbConfig.name;
 const mongoConfig = { useUnifiedTopology: true };
-console.log(url);
-const client = new MongoClient(url, mongoConfig);
 
-function doAction(collectionName, action) {
-  client.connect(() => {
-    const db = client.db(dbName);
-    const collection = db.collection(collectionName);
-    action(collection, (err) => {
-      if (err) {
-        console.error(err);
-      }
-      client.close();
-    });
-  });
+export async function connect(collectionName) {
+  const client = await MongoClient.connect(url, mongoConfig);
+  const db = client.db(dbName);
+  return { client, collection: db.collection(collectionName) };
 }
-
-export default doAction;
