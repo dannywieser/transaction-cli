@@ -24,24 +24,24 @@ const questions = [
     message: 'How much are you contributing?',
     when: ({ type }) => type === 'contribute',
   },
-  // {
-  //   type: 'expand',
-  //   name: 'currency',
-  //   message: 'Currency?',
-  //   choices: [
-  //     {
-  //       key: 'u',
-  //       name: 'USD',
-  //       value: 'usd',
-  //     },
-  //     {
-  //       key: 'c',
-  //       name: 'CAD',
-  //       value: 'cad',
-  //     },
-  //   ],
-  //   when: ({ type }) => type === 'contribute',
-  // },
+  {
+    type: 'expand',
+    name: 'currency',
+    message: 'Currency?',
+    choices: [
+      {
+        key: 'u',
+        name: 'USD',
+        value: 'usd',
+      },
+      {
+        key: 'c',
+        name: 'CAD',
+        value: 'cad',
+      },
+    ],
+    when: ({ type }) => type === 'contribute',
+  },
 ];
 
 export default questions;

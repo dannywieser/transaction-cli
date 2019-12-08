@@ -1,7 +1,8 @@
 import { connect } from './mongo';
 import { TransactionTypes } from './types';
+import { calculateCash } from './cash';
 
-export async function calculateTotalContributions(collection, date) {
+export async function calculateTotalContributions(collection, date, add = 0) {
   const query = { 'meta.date': { $lt: date }, 'meta.type': TransactionTypes.contribute.value };
   const coll = await collection.find(query);
   let total = 0;
@@ -11,14 +12,14 @@ export async function calculateTotalContributions(collection, date) {
     const { deposit = 0 } = details;
     total += deposit;
   }
-  return total;
+  return total + add;
 }
 
 export async function contribute({ account, type, deposit, currency }) {
   const date = new Date();
   const { client, collection } = await connect(`transactions.${account}`);
-  const prevContributions = await calculateTotalContributions(collection, date);
-  const totalContributions = prevContributions + deposit;
+  const totalContributions = await calculateTotalContributions(collection, date, deposit);
+  const cash = await calculateCash(collection, date, deposit, currency);
 
   const transaction = {
     meta: {
@@ -27,7 +28,7 @@ export async function contribute({ account, type, deposit, currency }) {
       currency,
     },
     details: { deposit },
-    summary: { totalContributions },
+    summary: { totalContributions, cash },
   };
   console.log(transaction);
   collection.insertOne(transaction, () => client.close());
