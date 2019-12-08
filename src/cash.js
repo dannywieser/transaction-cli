@@ -22,7 +22,7 @@ export async function getExchange(date) {
   return CAD;
 }
 
-export async function calculateCash({ date, account }, newTransaction) {
+export async function calculateCash({ date, account, exchange }, newTransaction) {
   const { client, collection } = await connect(transactionsCollection(account));
   const query = { 'meta.date': { $lt: date } };
   const coll = await collection.find(query);
@@ -43,6 +43,8 @@ export async function calculateCash({ date, account }, newTransaction) {
       cash['usd'] = round(cash['usd'] + usd);
     }
   }
+  const totalInCAD = round(cash['cad'] + cash['usd'] * exchange);
   client.close();
-  return cash;
+
+  return { ...cash, totalInCAD };
 }
