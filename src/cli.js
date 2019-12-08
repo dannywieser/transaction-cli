@@ -5,7 +5,7 @@ import { transactionsCollection } from './collections';
 import { connect } from './mongo';
 import chalk from 'chalk';
 
-console.log(chalk.white.bgBlue.bold('== Transaction::CLI =='));
+console.log(chalk.white.bgBlue.bold('=== Transaction::CLI ==='));
 
 const handlers = {
   contribute,
