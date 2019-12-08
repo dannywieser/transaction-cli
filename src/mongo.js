@@ -1,12 +1,13 @@
 import { MongoClient } from 'mongodb';
-import dbConfig from '../config';
+import config from '../config';
 
-const { url } = dbConfig;
-const dbName = dbConfig.name;
+const {
+  dbConfig: { url, name },
+} = config;
 const mongoConfig = { useUnifiedTopology: true };
 
 export async function connect(collectionName) {
   const client = await MongoClient.connect(url, mongoConfig);
-  const db = client.db(dbName);
+  const db = client.db(name);
   return { client, collection: db.collection(collectionName) };
 }

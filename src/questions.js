@@ -1,4 +1,4 @@
-import config from './config';
+import config from '../config';
 import { TransactionTypes } from './types';
 
 const toLower = (val) => (val ? val.toLowerCase() : val);
