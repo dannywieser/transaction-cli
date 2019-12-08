@@ -1,8 +1,7 @@
 import { connect } from './mongo';
 import { TransactionTypes } from './types';
 import { transactionsCollection } from './collections';
-import { generateSummary } from './summary';
-import { generateMeta } from './meta';
+
 import { round } from './utils';
 
 export async function calculateContributions({ date, account, exchange, type }, newTransaction) {
@@ -11,32 +10,21 @@ export async function calculateContributions({ date, account, exchange, type }, 
   const coll = await collection.find(query);
   const contributions =
     type === TransactionTypes.contribute
-      ? {
-          cad: newTransaction['cad'],
-          usd: newTransaction['usd'],
+    ? {
+      cad: newTransaction.cad,
+      usd: newTransaction.usd,
         }
-      : { cad: 0, usd: 0 };
+    : { cad: 0, usd: 0 };
 
   while (await coll.hasNext()) {
     const transaction = await coll.next();
     const { details = {} } = transaction || {};
     const { cad = 0, usd = 0 } = details;
-    contributions['cad'] += cad;
-    contributions['usd'] += usd;
+    contributions.cad += cad;
+    contributions.usd += usd;
   }
-  const totalInCAD = round(contributions['cad'] + contributions['usd'] * exchange);
+  const totalInCAD = round(contributions.cad + contributions.usd * exchange);
   client.close();
 
   return { ...contributions, totalInCAD };
-}
-
-export async function contribute(answers) {
-  const { deposit, currency } = answers;
-  const details = { usd: 0, cad: 0 };
-  details[currency] = deposit;
-
-  const meta = await generateMeta(answers);
-  const summary = await generateSummary(meta, details);
-  const transaction = { meta, summary, details };
-  return transaction;
 }

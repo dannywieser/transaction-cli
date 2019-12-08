@@ -11,7 +11,7 @@ import { round } from './utils';
 //   3. BUY transaction => - cash
 //   4. convert transaction => +/- cash
 
-//https://api.exchangeratesapi.io/2019-02-12?symbols=CAD&base=USD
+// https://api.exchangeratesapi.io/2019-02-12?symbols=CAD&base=USD
 export async function getExchange(date) {
   const fmtDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   const url = `https://api.exchangeratesapi.io/${fmtDate}?symbols=CAD&base=USD`;
@@ -26,24 +26,24 @@ export async function calculateCash({ date, account, exchange }, newTransaction)
   const { client, collection } = await connect(transactionsCollection(account));
   const query = { 'meta.date': { $lt: date } };
   const coll = await collection.find(query);
-  let cash = {
-    usd: newTransaction['usd'],
-    cad: newTransaction['cad'],
+  const cash = {
+    usd: newTransaction.usd,
+    cad: newTransaction.cad,
   };
 
   while (await coll.hasNext()) {
-    const transaction = await coll.next();
+    const transaction = coll.next();
     const {
       meta: { type },
       details = {},
     } = transaction;
     const { cad = 0, usd = 0 } = details;
     if (type === TransactionTypes.contribute.value) {
-      cash['cad'] = round(cash['cad'] + cad);
-      cash['usd'] = round(cash['usd'] + usd);
+      cash.cad = round(cash.cad + cad);
+      cash.usd = round(cash.usd + usd);
     }
   }
-  const totalInCAD = round(cash['cad'] + cash['usd'] * exchange);
+  const totalInCAD = round(cash.cad + cash.usd * exchange);
   client.close();
 
   return { ...cash, totalInCAD };

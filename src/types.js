@@ -9,4 +9,9 @@ export const TransactionTypes = {
     name: 'Conversion',
     value: 'conversion',
   },
+  buy: {
+    key: 'b',
+    name: 'Buy',
+    value: 'buy',
+  },
 };

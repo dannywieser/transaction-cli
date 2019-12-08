@@ -35,7 +35,7 @@ const questions = [
     type: 'expand',
     name: 'type',
     message: 'What type of transaction?',
-    choices: [TransactionTypes.contribute, TransactionTypes.conversion],
+    choices: [TransactionTypes.contribute, TransactionTypes.buy, TransactionTypes.conversion],
     filter: toLower,
   },
   {
@@ -50,7 +50,7 @@ const questions = [
     message: 'Currency?',
     default: 'cad',
     choices: currency,
-    when: ({ type }) => type === 'contribute',
+    when: ({ type }) => type === 'contribute' || type === 'buy',
   },
   {
     type: 'expand',
@@ -79,6 +79,30 @@ const questions = [
     name: 'credit',
     message: 'Target Credit',
     when: ({ type }) => type === 'conversion',
+  },
+  {
+    type: 'input',
+    name: 'symbol',
+    message: 'symbol',
+    when: ({ type }) => type === 'buy',
+  },
+  {
+    type: 'number',
+    name: 'shares',
+    message: 'shares',
+    when: ({ type }) => type === 'buy',
+  },
+  {
+    type: 'number',
+    name: 'price',
+    message: 'price',
+    when: ({ type }) => type === 'buy',
+  },
+  {
+    type: 'number',
+    name: 'fee',
+    message: 'fee',
+    when: ({ type }) => type === 'buy',
   },
 ];
 

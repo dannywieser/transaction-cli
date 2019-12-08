@@ -1,4 +1,3 @@
-# Logs
 logs
 *.log
 npm-debug.log*
@@ -12,4 +11,5 @@ node_modules/
 .eslintcache
 *.tgz
 .yarn-integrity
+dist
 config.js
